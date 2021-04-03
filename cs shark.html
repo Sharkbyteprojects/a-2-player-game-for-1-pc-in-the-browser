@@ -1,0 +1,143 @@
+<!DOCTYPE HTML>
+<!--<c> SHARKBYTEPROJECTS-->
+<html>
+    <head>
+        <title>CardShark</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(()=>{
+                $(".loadin").html($(".preload").html().split("p1").join("p2"));
+                var current1=true;
+                var round=0;
+                var sett={"p1":{"live":1000, "ammo":50, "maxammo": 50, "shield": false}, "p2":{"live": 1000, "ammo":50, "maxammo": 50, "shield": false}};
+                function tb(live, ammo, maxammo, shield){
+                    return `Lives:  ${live}${ammo!=undefined?`; Ammo: ${ammo}`:""}${maxammo!=undefined?`; Max Ammo: ${maxammo}`:""}${shield!=undefined?`; Shield: ${shield?"Yes":"No"}`:""}`;
+                }
+                function roe(){
+                    var y = "button.p1";
+                    var x = "button.p2";
+                    var cp="p1";
+                    var other="p2"
+                    if(!current1){
+                        var rx=x;
+                        x=y;
+                        y=rx;
+                        cp="p2";
+                        other="p1";
+                    }
+                    sett[cp].shield=false;
+                    $(x).prop("disabled", true);
+                    $(y).prop("disabled", false);
+                    $(`.${cp}.values`).text(tb(sett[cp].live, sett[cp].ammo, sett[cp].maxammo, sett[cp].shield));
+                    $(`.${other}.values`).text(tb(sett[other].live));
+                    const rxx=++round;
+                    $(".currentplayer").text(`Currently is Player ${current1?"1":"2"}; ROUND: ${((rxx-(rxx%2))/2)}`);
+					if(sett.p1.live<=0){
+						alert("Player 2 Won");
+						document.location.reload();
+					}
+					if(sett.p2.live<=0){
+						alert("Player 1 Won");
+						document.location.reload();
+					}
+                }
+                function chl(){
+                    current1=!current1;
+                    roe();
+                }
+                $(".p1.upammo").click(()=>{
+                    sett.p1.maxammo+=13;
+                    chl();
+                });
+                $(".p2.upammo").click(()=>{
+                    sett.p2.maxammo+=13;
+                    chl();
+                });
+                $(".p1.shield").click(()=>{
+                    if(sett.p1.ammo-20>=0){
+                        sett.p1.shield=true;
+                        sett.p1.ammo-=20;
+                        chl();
+                    }else{
+                        alert("You need more Ammo");
+                    }
+                });
+                $(".p2.shield").click(()=>{
+                    if(sett.p2.ammo-20>=0){
+                        sett.p2.shield=true;
+                        sett.p2.ammo-=20;
+                        chl();
+                    }else{
+                        alert("You need more Ammo");
+                    }
+                });
+                $(".p1.reload").click(()=>{
+                    sett.p1.ammo=sett.p1.maxammo;
+                    chl();
+                });
+                $(".p2.reload").click(()=>{
+                    sett.p2.ammo=sett.p2.maxammo;
+                    chl();
+                });
+                $(".p1.fire").click(()=>{
+                    if(!sett.p2.shield){
+                        sett.p2.live-=sett.p1.ammo;
+                        sett.p1.ammo=0;
+                    }
+                    chl();
+                });
+                $(".p2.fire").click(()=>{
+                    if(!sett.p1.shield){
+                        sett.p1.live-=sett.p2.ammo;
+                        sett.p2.ammo=0;
+                    }
+                    chl();
+                });
+                $(".p1.heal").click(()=>{
+                    if(sett.p1.ammo-1>=0){
+                        const mo=sett.p1.ammo%2;
+                        console.log(mo);
+                        sett.p1.live+=(sett.p1.ammo-mo)/2;
+                        sett.p1.ammo=mo;
+                        chl();
+                    }else{
+                        alert("You need more Ammo");
+                    }
+                });
+                $(".p2.heal").click(()=>{
+                    if(sett.p2.ammo-1>=0){
+                        const mo=sett.p2.ammo%2;
+                        console.log(mo);
+                        sett.p2.live+=(sett.p2.ammo-mo)/2;
+                        sett.p2.ammo=mo;
+                        chl();
+                    }else{
+                        alert("You need more Ammo");
+                    }
+                });
+                roe();
+            });
+        </script>
+    </head>
+    <body>
+        <h1 class="currentplayer"></h1>
+        <hr>
+        <h2>Player 1</h2>
+        <div class="preload p1">
+            <div class="p1 values"></div>
+            <button class="p1 upammo">Upgrade Max Ammo +13</button>
+            <button class="p1 shield">Shield (-20 ammo, Block all attacks for the next round)</button>
+            <button class="p1 reload">Reload</button>
+            <button class="p1 fire">Fire All Ammo</button>
+            <button class="p1 heal">Heal (-2 ammo per Healed Healthpoint), can overhealed</button>
+        </div>
+        <hr>
+        <h2>Player 2</h2>
+        <div class="p2 loadin"></div>
+		<hr>
+		<h3>Gamerules:</h3>
+		<p>If Player 1 choose something, player 2 shouldnt know the choosen one, if player 2 choose something, player 1 shouldnt kno about the choosen. Goal is it to remove all lives from enemie</p>
+		<hr>
+		<p>&copy; Sharkbyteprojects</p>
+    </body>
+</html>
